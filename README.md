@@ -1,1 +1,1 @@
-# animal-detection
+Pytorch yolov3 weights and animal videos (https://drive.google.com/drive/folders/18PRvy569y1C_snZoNj8nfqmds1P0k4kl)
