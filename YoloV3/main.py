@@ -59,7 +59,6 @@ if __name__ == '__main__':
                         predicted_bboxes = detector.predict()
                         boxes = non_maximum_suppression(predicted_bboxes, 0.5).cpu()
                         result = detector.draw_boxes_on_image(boxes, classes)
-                        result = cv2.resize(result, (1280, 720))
                         cv2.imshow('YoloV3 Video Detection', result)
                     else:
                         break
