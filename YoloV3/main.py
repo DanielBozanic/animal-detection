@@ -3,6 +3,7 @@ import cv2
 import torch
 from yolov3_detector import YoloV3Detector
 from utils import *
+from evaluate import *
 from backbone import Backbone
 from yolov3 import YoloV3
 
@@ -22,6 +23,7 @@ if __name__ == '__main__':
 
         print("1. YoloV3 object detection on image")
         print("2. YoloV3 object detection on video")
+        print("3. Evaluate YoloV3 performance")
         choice = input()
 
         # Image
@@ -32,6 +34,7 @@ if __name__ == '__main__':
             if image is None:
                 print("Image not found!")
             else:
+                image = cv2.resize(image, (1280, 720))
                 detector = YoloV3Detector(yoloV3, image, device, 0.65, 0.4, 416)
                 predicted_bboxes = detector.predict()
                 boxes = non_maximum_suppression(predicted_bboxes, 0.5).cpu()
@@ -56,6 +59,7 @@ if __name__ == '__main__':
                         predicted_bboxes = detector.predict()
                         boxes = non_maximum_suppression(predicted_bboxes, 0.5).cpu()
                         result = detector.draw_boxes_on_image(boxes, classes)
+                        result = cv2.resize(result, (1280, 720))
                         cv2.imshow('YoloV3 Video Detection', result)
                     else:
                         break
@@ -64,5 +68,8 @@ if __name__ == '__main__':
                         break
                 cap.release()
                 cv2.destroyAllWindows()
+        # Evaluate YoloV3 performance
+        elif choice == "3":
+            evaluate_pytorch_yoloV3(device)
         else:
             print("Invalid input!")

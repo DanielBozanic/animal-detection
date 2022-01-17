@@ -40,11 +40,12 @@
 61,108,154,256,23,test_images/giraffes_jpg.rf.6fe02c15ddcc1b6aac50cb1dd702efc2.jpg
 229,172,50.5,131,23,test_images/giraffes_jpg.rf.6fe02c15ddcc1b6aac50cb1dd702efc2.jpg
 15,119,62,263,23,test_images/giraffes_jpg.rf.6fe02c15ddcc1b6aac50cb1dd702efc2.jpg
-73,113,93.5,191.5,22,test_images/zebras_jpg.rf.1fe0eb103576557a71ae55aa7ccc1de2.jpg
-151,130,95.5,166.5,22,test_images/zebras_jpg.rf.1fe0eb103576557a71ae55aa7ccc1de2.jpg
-3,122,82,196,22,test_images/zebras_jpg.rf.1fe0eb103576557a71ae55aa7ccc1de2.jpg
-300,124,100,203.5,22,test_images/zebras_jpg.rf.1fe0eb103576557a71ae55aa7ccc1de2.jpg
-227,128,111,228,22,test_images/zebras_jpg.rf.1fe0eb103576557a71ae55aa7ccc1de2.jpg
+355,122,44.5,182.5,22,test_images/zebras_jpg.rf.825e4dd8b955f87299e394d014e28641.jpg
+310,143,46.5,166.5,22,test_images/zebras_jpg.rf.825e4dd8b955f87299e394d014e28641.jpg
+218,142,85.5,174.5,22,test_images/zebras_jpg.rf.825e4dd8b955f87299e394d014e28641.jpg
+172,168,42,158.5,22,test_images/zebras_jpg.rf.825e4dd8b955f87299e394d014e28641.jpg
+92,169,78.5,164.5,22,test_images/zebras_jpg.rf.825e4dd8b955f87299e394d014e28641.jpg
+17,193,69,155.5,22,test_images/zebras_jpg.rf.825e4dd8b955f87299e394d014e28641.jpg
 328,161,67.5,81.5,20,test_images/elephants_jpg.rf.020a0bb12d47efbc05faf161cf46663b.jpg
 239,164,84,92,20,test_images/elephants_jpg.rf.020a0bb12d47efbc05faf161cf46663b.jpg
 32,163,122,113.5,20,test_images/elephants_jpg.rf.020a0bb12d47efbc05faf161cf46663b.jpg
