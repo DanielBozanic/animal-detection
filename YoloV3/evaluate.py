@@ -20,14 +20,7 @@ def get_annotated_data():
     return data
 
 
-def evaluate_pytorch_yoloV3(device, iou_thresh=0.5):
-    backbone = Backbone()
-    backbone = backbone.extractor
-
-    yoloV3 = YoloV3(backbone)
-    yoloV3.load_state_dict(torch.load('data/weights.pth'))
-    yoloV3.to(device)
-
+def evaluate_pytorch_yoloV3(model, device, iou_thresh=0.5):
     total_detections = 0
     total_successful_detections = 0
 
@@ -36,7 +29,7 @@ def evaluate_pytorch_yoloV3(device, iou_thresh=0.5):
         total_detections_image = 0
         successful_detections_image = 0
         image = cv2.imread(key)
-        detector = YoloV3Detector(yoloV3, image, device, 0.65, 0.4, 416)
+        detector = YoloV3Detector(model, image, device, 0.65, 0.4, 416)
         predicted_bboxes = detector.predict()
         for truth_box in annotated_data[key]:
             total_detections += 1
