@@ -1,7 +1,5 @@
 import cv2
 import torch
-from backbone import Backbone
-from yolov3 import YoloV3
 from yolov3_detector import *
 from utils import *
 
