@@ -69,6 +69,7 @@ if __name__ == '__main__':
                 cv2.destroyAllWindows()
         # Evaluate YoloV3 performance
         elif choice == "3":
-            evaluate_pytorch_yoloV3(yoloV3, device)
+            ev = EvaluateYoloV3()
+            ev.evaluate_pytorch_yoloV3(yoloV3, device)
         else:
             print("Invalid input!")
