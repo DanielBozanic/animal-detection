@@ -30,8 +30,6 @@ class EvaluateYoloV3:
                                   box[2].item(), box[3].item(),
                                   box[6].item()))
             for ground_truth_box in annotated_data[image_path]:
-                self.__total_detections += 1
-                self.__total_detections_image += 1
                 bbox_index = 0
                 best_iou = 0
                 ground_truth_box = (ground_truth_box[0], ground_truth_box[1],
@@ -63,6 +61,9 @@ class EvaluateYoloV3:
                         self.__total_false_positives_classification[ground_truth_box[4]] += 1
                         self.__false_positives_classification_image[ground_truth_box[4]] += 1
                     del new_predicted_bboxes[bbox_index]
+                else:
+                    self.__total_false_negatives_detections += 1
+                    self.___false_negatives_detections_image += 1
 
             self.__total_false_positives_detections += len(new_predicted_bboxes)
             self.__false_positives_detections_image += len(new_predicted_bboxes)
@@ -72,15 +73,15 @@ class EvaluateYoloV3:
         self.__print_overall_evaluation()
 
     def __initalize_total_variables(self):
-        self.__total_detections = 0
         self.__total_true_positives_detections = 0
+        self.__total_false_negatives_detections = 0
         self.__total_false_positives_detections = 0
         self.__total_true_positives_classification = dict()
         self.__total_false_positives_classification = dict()
 
     def __initalize_image_variables(self):
-        self.__total_detections_image = 0
         self.__true_positives_detections_image = 0
+        self.___false_negatives_detections_image = 0
         self.__false_positives_detections_image = 0
         self.__true_positives_classification_image = dict()
         self.__false_positives_classification_image = dict()
@@ -102,7 +103,8 @@ class EvaluateYoloV3:
         return data
 
     def __print_image_evaluation(self, image_path):
-        detection_accuracy_image = self.__true_positives_detections_image / self.__total_detections_image
+        detection_accuracy_image = self.__true_positives_detections_image / (self.__true_positives_detections_image +
+            self.__false_positives_detections_image + self.___false_negatives_detections_image)
         print("Detection accuracy for test image " + image_path + ":", str(round(detection_accuracy_image, 3)))
 
         detection_precision_image = self.__true_positives_detections_image / (
@@ -125,7 +127,8 @@ class EvaluateYoloV3:
               "===============================================\n")
 
     def __print_overall_evaluation(self):
-        total_detection_accuracy = self.__total_true_positives_detections / self.__total_detections
+        total_detection_accuracy = self.__total_true_positives_detections / (self.__total_true_positives_detections +
+            self.__total_false_negatives_detections + self.__total_false_positives_detections)
         print("Total detection accuracy for all test images: ", str(round(total_detection_accuracy, 3)))
 
         total_detection_precision = self.__total_true_positives_detections / (
