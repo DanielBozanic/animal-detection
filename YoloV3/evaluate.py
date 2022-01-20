@@ -21,9 +21,8 @@ class EvaluateYoloV3:
         for image_path in annotated_data:
             self.__initalize_image_variables()
             image = cv2.imread(image_path)
-            detector = YoloV3Detector(model, image, device, 0.65, 0.4, 416)
+            detector = YoloV3Detector(model, image, device, 0.65, 0.5, 416)
             predicted_bboxes = detector.predict()
-            predicted_bboxes = non_maximum_suppression(predicted_bboxes, 0.5).cpu()
             new_predicted_bboxes = []
             for box in predicted_bboxes:
                 new_predicted_bboxes.append((box[0].item(), box[1].item(),
@@ -116,12 +115,13 @@ class EvaluateYoloV3:
             if class_id not in self.__true_positives_classification_image or \
                     class_id not in self.__false_positives_classification_image:
                 continue
-            classification_precision_image[class_id] = self.__true_positives_classification_image[class_id] / \
+            if self.__true_positives_classification_image[class_id] > 0:
+                classification_precision_image[class_id] = self.__true_positives_classification_image[class_id] / \
                                                        (self.__true_positives_classification_image[class_id] +
                                                         self.__false_positives_classification_image[class_id])
-            print("Precision classification for class "
-                  + self.__classes[class_id] + " in test image " + image_path + ":",
-                  str(round(classification_precision_image[class_id], 3)) + "\n")
+                print("Precision classification for class "
+                      + self.__classes[class_id] + " in test image " + image_path + ":",
+                      str(round(classification_precision_image[class_id], 3)))
 
         print("=============================================="
               "===============================================\n")
@@ -140,8 +140,9 @@ class EvaluateYoloV3:
             if class_id not in self.__total_true_positives_classification or \
                     class_id not in self.__total_false_positives_classification:
                 continue
-            total_classification_precision[class_id] = self.__total_true_positives_classification[class_id] / \
+            if self.__total_true_positives_classification[class_id] > 0:
+                total_classification_precision[class_id] = self.__total_true_positives_classification[class_id] / \
                                                        (self.__total_true_positives_classification[class_id] +
                                                         self.__total_false_positives_classification[class_id])
-            print("Precision classification across all test images for class " + self.__classes[class_id] + ":",
-                  str(round(total_classification_precision[class_id], 3)))
+                print("Precision classification across all test images for class " + self.__classes[class_id] + ":",
+                      str(round(total_classification_precision[class_id], 3)))

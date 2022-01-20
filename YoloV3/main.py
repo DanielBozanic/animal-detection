@@ -34,12 +34,9 @@ if __name__ == '__main__':
             if image is None:
                 print("Image not found!")
             else:
-                image = cv2.resize(image, (1280, 720))
-                detector = YoloV3Detector(yoloV3, image, device, 0.65, 0.4, 416)
+                detector = YoloV3Detector(yoloV3, image, device, 0.65, 0.5, 416)
                 predicted_bboxes = detector.predict()
-                boxes = non_maximum_suppression(predicted_bboxes, 0.5).cpu()
-                classes = read_classes('data/coco.names')
-                result = detector.draw_boxes_on_image(boxes, classes)
+                result = detector.draw_boxes_on_image(predicted_bboxes)
                 cv2.imshow('YoloV3 Image Detection', result)
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
@@ -50,15 +47,13 @@ if __name__ == '__main__':
             if not os.path.isfile(video_path):
                 print("Video not found!")
             else:
-                classes = read_classes('data/coco.names')
                 cap = cv2.VideoCapture(video_path)
                 while cap.isOpened():
                     _, image = cap.read()
                     if image is not None:
-                        detector = YoloV3Detector(yoloV3, image, device, 0.65, 0.4, 416)
+                        detector = YoloV3Detector(yoloV3, image, device, 0.65, 0.5, 416)
                         predicted_bboxes = detector.predict()
-                        boxes = non_maximum_suppression(predicted_bboxes, 0.5).cpu()
-                        result = detector.draw_boxes_on_image(boxes, classes)
+                        result = detector.draw_boxes_on_image(predicted_bboxes)
                         cv2.imshow('YoloV3 Video Detection', result)
                     else:
                         break
