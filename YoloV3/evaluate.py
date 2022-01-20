@@ -102,13 +102,16 @@ class EvaluateYoloV3:
         return data
 
     def __print_image_evaluation(self, image_path):
+        print("IMAGE: " + image_path + "\n")
+
         detection_accuracy_image = self.__true_positives_detections_image / (self.__true_positives_detections_image +
             self.__false_positives_detections_image + self.___false_negatives_detections_image)
-        print("Detection accuracy for test image " + image_path + ":", str(round(detection_accuracy_image, 3)))
+        print("Detection accuracy:", str(round(detection_accuracy_image, 3)))
 
-        detection_precision_image = self.__true_positives_detections_image / (
-                    self.__true_positives_detections_image + self.__false_positives_detections_image)
-        print("Detection precision for test image " + image_path + ":", str(round(detection_precision_image, 3)))
+        if self.__true_positives_detections_image > 0:
+            detection_precision_image = self.__true_positives_detections_image / (
+                        self.__true_positives_detections_image + self.__false_positives_detections_image)
+            print("Detection precision:", str(round(detection_precision_image, 3)))
 
         classification_precision_image = dict()
         for class_id in [14, 15, 16, 20, 22, 23]:
@@ -120,8 +123,7 @@ class EvaluateYoloV3:
                                                        (self.__true_positives_classification_image[class_id] +
                                                         self.__false_positives_classification_image[class_id])
                 print("Precision classification for class "
-                      + self.__classes[class_id] + " in test image " + image_path + ":",
-                      str(round(classification_precision_image[class_id], 3)))
+                      + self.__classes[class_id] + ":", str(round(classification_precision_image[class_id], 3)))
 
         print("=============================================="
               "===============================================\n")
@@ -131,9 +133,10 @@ class EvaluateYoloV3:
             self.__total_false_negatives_detections + self.__total_false_positives_detections)
         print("Total detection accuracy for all test images: ", str(round(total_detection_accuracy, 3)))
 
-        total_detection_precision = self.__total_true_positives_detections / (
-                    self.__total_true_positives_detections + self.__total_false_positives_detections)
-        print("Total detection precision for all test images: ", str(round(total_detection_precision, 3)))
+        if self.__total_true_positives_detections > 0:
+            total_detection_precision = self.__total_true_positives_detections / (
+                        self.__total_true_positives_detections + self.__total_false_positives_detections)
+            print("Total detection precision for all test images: ", str(round(total_detection_precision, 3)))
 
         total_classification_precision = dict()
         for class_id in [14, 15, 16, 20, 22, 23]:
