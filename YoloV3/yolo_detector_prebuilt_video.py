@@ -28,15 +28,26 @@ def find_objects(model_outputs):
                 confidence_values.append(float(confidence))
 
     box_indexes_to_keep = cv2.dnn.NMSBoxes(bounding_box_locations, confidence_values, PREDICTION_LOW_LIMIT, SUPPRESSION_THRESHOLD)
+    for i, box in enumerate(bounding_box_locations):
+        if class_ids[i] in [14, 15, 16, 20, 22, 23]:
+            box.append(class_ids[i])
+        else:
+            if i in box_indexes_to_keep:
+                index = box_indexes_to_keep.tolist().index([i])
+                box_indexes_to_keep[index] = [-1]
+    new_predicted_bboxes = []
+    if len(box_indexes_to_keep) > 0:
+        for index in box_indexes_to_keep.flatten():
+            if index != -1:
+                new_predicted_bboxes.append(bounding_box_locations[index])
 
-    return box_indexes_to_keep, bounding_box_locations, class_ids, confidence_values
+    return new_predicted_bboxes, class_ids, confidence_values
 
 
-def show_detected_images(img, bounding_box_ids, all_bounding_boxes, classes, class_ids,
+def show_detected_images(img, all_bounding_boxes, classes, class_ids,
                          confidence_values, width_ratio, height_ratio, colors):
     try:
-        for idx in bounding_box_ids.flatten():
-            bounding_box = all_bounding_boxes[idx]
+        for idx, bounding_box in enumerate(all_bounding_boxes):
             x, y, w, h = int(bounding_box[0]), int(bounding_box[1]), int(bounding_box[2]), int(bounding_box[3])
             x = int(x * width_ratio)
             y = int(y * height_ratio)
@@ -89,8 +100,8 @@ def yolo_prebuilt_video(type, path):
         output_names = [layer_names[idx[0] - 1] for idx in neural_network.getUnconnectedOutLayers()]
         outputs = neural_network.forward(output_names) # forward propagation
 
-        predicted_objects_idx, bbox_locations, class_label_ids, conf_values = find_objects(outputs) # uzmi stuff iz prediction vector
-        show_detected_images(frame, predicted_objects_idx, bbox_locations, labels, class_label_ids, conf_values,
+        bbox_locations, class_label_ids, conf_values = find_objects(outputs) # uzmi stuff iz prediction vector
+        show_detected_images(frame, bbox_locations, labels, class_label_ids, conf_values,
                              original_width / YOLO_SIZE, original_height / YOLO_SIZE, colors)
 
         cv2.imshow('YOLO Algorithm', frame)

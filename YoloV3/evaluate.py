@@ -251,8 +251,6 @@ class EvaluateYoloPrebuilt:
         for image_path in annotated_data:
             self.__initalize_image_variables()
             image = cv2.imread(image_path)
-            if "blends" in image_path:
-                break
             if image is None:
                 print("Image not found!")
                 break
@@ -265,19 +263,7 @@ class EvaluateYoloPrebuilt:
             output_names = \
                 [layers[idx[0] - 1] for idx in neural_network.getUnconnectedOutLayers()]
             outputs = neural_network.forward(output_names)
-            predicted_objects_idx, bbox_locations, class_label_ids, conf_values = find_objects(outputs)
-            i = 0
-            for box in bbox_locations:
-                if class_label_ids[i] != 0:
-                    box.append(class_label_ids[i])
-                else:
-                    box.append(class_label_ids[i-1])
-                i += 1
-            if not bbox_locations or len(bbox_locations[0]) == 4:
-                continue
-            new_predicted_bboxes = []
-            for index in predicted_objects_idx.flatten():
-                new_predicted_bboxes.append(bbox_locations[index])
+            bbox_locations, class_label_ids, conf_values = find_objects(outputs)
             for ground_truth_box in annotated_data[image_path]:
                 bbox_index = 0
                 best_iou = 0
@@ -285,7 +271,7 @@ class EvaluateYoloPrebuilt:
                                     ground_truth_box[0] + ground_truth_box[2],
                                     ground_truth_box[1] + ground_truth_box[3],
                                     ground_truth_box[4])
-                for index, predicted_bbox in enumerate(new_predicted_bboxes):
+                for index, predicted_bbox in enumerate(bbox_locations):
                     predicted_bbox = (predicted_bbox[0], predicted_bbox[1],
                                       predicted_bbox[0] + predicted_bbox[2],
                                       predicted_bbox[1] + predicted_bbox[3],
@@ -307,19 +293,19 @@ class EvaluateYoloPrebuilt:
                 if best_iou >= iou_thresh:
                     self.__total_true_positives_detections += 1
                     self.__true_positives_detections_image += 1
-                    if ground_truth_box[4] == new_predicted_bboxes[bbox_index][4]:
+                    if ground_truth_box[4] == bbox_locations[bbox_index][4]:
                         self.__total_true_positives_classification[ground_truth_box[4]] += 1
                         self.__true_positives_classification_image[ground_truth_box[4]] += 1
                     else:
                         self.__total_false_positives_classification[ground_truth_box[4]] += 1
                         self.__false_positives_classification_image[ground_truth_box[4]] += 1
-                    del new_predicted_bboxes[bbox_index]
+                    del bbox_locations[bbox_index]
                 else:
                     self.__total_false_negatives_detections += 1
                     self.___false_negatives_detections_image += 1
 
-            self.__total_false_positives_detections += len(new_predicted_bboxes)
-            self.__false_positives_detections_image += len(new_predicted_bboxes)
+            self.__total_false_positives_detections += len(bbox_locations)
+            self.__false_positives_detections_image += len(bbox_locations)
 
             self.__print_image_evaluation(image_path)
 
