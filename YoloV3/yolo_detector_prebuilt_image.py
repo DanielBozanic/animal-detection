@@ -15,7 +15,7 @@ def find_objects(model_outputs):
     class_ids = [] # indeksi svake pronadjene klase od svakog kvadrata, ovo je u odnosu na COCO.names dataset
     confidence_values = [] # verovatnoca da je klasa tacna
 
-    # Idemo kroz sve slojeve YOLO-a, imamo 3 layer-a
+    # Idemo kroz sve slojeve YOLO-a, imamo 3 layer-a.. 3 boxes
     for output in model_outputs:
         for prediction in output: # idemo kroz bounding boxes layer-a
             scores = prediction[5:] # scores za sve klase iz coco.names
@@ -23,8 +23,9 @@ def find_objects(model_outputs):
             confidence = scores[class_idx]
 
             if confidence > PREDICTION_LOW_LIMIT:
-                # prediction vraca na skali od 0 do 1.. need to rescale!! na 320x320
-                w, h = int(prediction[2] * YOLO_SIZE), int(prediction[3] * YOLO_SIZE)
+                # w,h su bili kroz sigmoidnnu fukciju
+                # prediction vraca na skali od 0 do 1.. need to rescale!!
+                w, h = int(prediction[2] * YOLO_SIZE), int(prediction[3] * YOLO_SIZE) # centar kvadrata
                 x, y = int(prediction[0] * YOLO_SIZE - w / 2), int(prediction[1] * YOLO_SIZE - h / 2) # isto za centar kvadrata
                 bounding_box_locations.append([x, y, w, h])
                 class_ids.append(class_idx)
