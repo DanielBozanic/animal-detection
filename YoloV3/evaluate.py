@@ -24,7 +24,7 @@ class EvaluateYoloV3:
         for image_path in annotated_data:
             self.__initalize_image_variables()
             image = cv2.imread(image_path)
-            detector = YoloV3Detector(model, image, device, 0.65, 0.5, 416)
+            detector = YoloV3Detector(model, image, device, 0.3, 0.5, 416)
             predicted_bboxes = detector.predict()
             new_predicted_bboxes = []
             for box in predicted_bboxes:
@@ -158,7 +158,7 @@ class EvaluateYoloPrebuilt:
 
     def __init__(self):
         self.__classes = read_classes('data/coco.names')
-        self.__yolo_size = 320;
+        self.__yolo_size = 416;
 
     def __initalize_total_variables(self):
         self.__total_true_positives_detections = 0
@@ -273,13 +273,9 @@ class EvaluateYoloPrebuilt:
                 i += 1
             if not bbox_locations or len(bbox_locations[0]) == 4:
                 continue
-            predicted_bboxes = bbox_locations
-
-
             new_predicted_bboxes = []
-            for box in predicted_bboxes:
-                new_predicted_bboxes.append((box[0], box[1],
-                                  box[2], box[3], box[4]))
+            for index in predicted_objects_idx.flatten():
+                new_predicted_bboxes.append(bbox_locations[index])
             for ground_truth_box in annotated_data[image_path]:
                 bbox_index = 0
                 best_iou = 0
@@ -289,9 +285,9 @@ class EvaluateYoloPrebuilt:
                                     ground_truth_box[4])
                 for index, predicted_bbox in enumerate(new_predicted_bboxes):
                     predicted_bbox = (predicted_bbox[0], predicted_bbox[1],
-                                        predicted_bbox[0] + predicted_bbox[2],
-                                        predicted_bbox[1] + predicted_bbox[3],
-                                        predicted_bbox[4])
+                                      predicted_bbox[0] + predicted_bbox[2],
+                                      predicted_bbox[1] + predicted_bbox[3],
+                                      predicted_bbox[4])
                     iou = intersection_over_union(ground_truth_box, predicted_bbox)
                     if iou > best_iou:
                         best_iou = iou

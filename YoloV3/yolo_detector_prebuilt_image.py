@@ -5,8 +5,8 @@ import argparse
 
 DATA_FOLDER = './data/'
 
-SUPPRESSION_THRESHOLD = 0.3
-YOLO_SIZE = 320
+SUPPRESSION_THRESHOLD = 0.5
+YOLO_SIZE = 416
 PREDICTION_LOW_LIMIT = 0.3 # ako je ispod 30% ne treba nam predikcija
 
 
