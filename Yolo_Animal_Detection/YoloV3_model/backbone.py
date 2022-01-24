@@ -1,6 +1,6 @@
 import torch.nn as nn
-from modules.convolutional_layer import ConvolutionalLayer
-from modules.residual_block import ResidualBlock
+from YoloV3_model.modules.convolutional_layer import ConvolutionalLayer
+from YoloV3_model.modules.residual_block import ResidualBlock
 
 class DarknetBlock(nn.Module):
     def __init__(self, filters_in, length):

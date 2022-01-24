@@ -1,11 +1,7 @@
 import os
-import cv2
-import torch
-from yolov3_detector import YoloV3Detector
-from utils import *
 from evaluate import *
-from backbone import Backbone
-from yolov3 import YoloV3
+from YoloV3_model.backbone import Backbone
+from YoloV3_model.yolov3 import YoloV3
 from yolo_detector_prebuilt_image import yolo_prebuilt_image
 from yolo_detector_prebuilt_video import yolo_prebuilt_video
 

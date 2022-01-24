@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from modules.convolutional_layer import ConvolutionalLayer
+from YoloV3_model.modules.convolutional_layer import ConvolutionalLayer
 
 class Upsample(nn.Module):
     def __init__(self, filters_in, filters_out=0):

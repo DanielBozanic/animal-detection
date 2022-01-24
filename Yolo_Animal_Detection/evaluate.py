@@ -1,10 +1,5 @@
-import cv2
-import torch
-import numpy as np
 from yolov3_detector import *
-from yolo_detector_prebuilt_image import *
 from utils import *
-
 
 
 class EvaluateYoloV3:
@@ -12,67 +7,6 @@ class EvaluateYoloV3:
     def __init__(self):
         self.__classes = read_classes('data/coco.names')
         self.__initalize_total_variables()
-
-    def evaluate_pytorch_yoloV3(self, model, device, iou_thresh=0.5):
-        print("PYTORCH YOLOV3 EVALUATION")
-        print("=============================================="
-              "===============================================\n")
-
-        self.__initalize_image_variables()
-        self.__initalize_total_variables()
-        annotated_data = self.__get_annotated_data()
-        for image_path in annotated_data:
-            self.__initalize_image_variables()
-            image = cv2.imread(image_path)
-            detector = YoloV3Detector(model, image, device, 0.3, 0.5, 416)
-            predicted_bboxes = detector.predict()
-            new_predicted_bboxes = []
-            for box in predicted_bboxes:
-                new_predicted_bboxes.append((box[0].item(), box[1].item(),
-                                  box[2].item(), box[3].item(),
-                                  box[6].item()))
-            for ground_truth_box in annotated_data[image_path]:
-                bbox_index = 0
-                best_iou = 0
-                ground_truth_box = (ground_truth_box[0], ground_truth_box[1],
-                                    ground_truth_box[0] + ground_truth_box[2],
-                                    ground_truth_box[1] + ground_truth_box[3],
-                                    ground_truth_box[4])
-                for index, predicted_bbox in enumerate(new_predicted_bboxes):
-                    iou = intersection_over_union(ground_truth_box, predicted_bbox)
-                    if iou > best_iou:
-                        best_iou = iou
-                        bbox_index = index
-
-                if ground_truth_box[4] not in self.__total_true_positives_classification:
-                    self.__total_true_positives_classification[ground_truth_box[4]] = 0
-                if ground_truth_box[4] not in self.__total_false_positives_classification:
-                    self.__total_false_positives_classification[ground_truth_box[4]] = 0
-                if ground_truth_box[4] not in self.__true_positives_classification_image:
-                    self.__true_positives_classification_image[ground_truth_box[4]] = 0
-                if ground_truth_box[4] not in self.__false_positives_classification_image:
-                    self.__false_positives_classification_image[ground_truth_box[4]] = 0
-
-                if best_iou >= iou_thresh:
-                    self.__total_true_positives_detections += 1
-                    self.__true_positives_detections_image += 1
-                    if ground_truth_box[4] == new_predicted_bboxes[bbox_index][4]:
-                        self.__total_true_positives_classification[ground_truth_box[4]] += 1
-                        self.__true_positives_classification_image[ground_truth_box[4]] += 1
-                    else:
-                        self.__total_false_positives_classification[ground_truth_box[4]] += 1
-                        self.__false_positives_classification_image[ground_truth_box[4]] += 1
-                    del new_predicted_bboxes[bbox_index]
-                else:
-                    self.__total_false_negatives_detections += 1
-                    self.___false_negatives_detections_image += 1
-
-            self.__total_false_positives_detections += len(new_predicted_bboxes)
-            self.__false_positives_detections_image += len(new_predicted_bboxes)
-
-            self.__print_image_evaluation(image_path)
-
-        self.__print_overall_evaluation()
 
     def __initalize_total_variables(self):
         self.__total_true_positives_detections = 0
@@ -152,6 +86,67 @@ class EvaluateYoloV3:
                                                         self.__total_false_positives_classification[class_id])
                 print("Precision classification across all test images for class " + self.__classes[class_id] + ":",
                       str(round(total_classification_precision[class_id], 3)))
+
+    def evaluate_pytorch_yoloV3(self, model, device, iou_thresh=0.5):
+        print("PYTORCH YOLOV3 EVALUATION")
+        print("=============================================="
+              "===============================================\n")
+
+        self.__initalize_image_variables()
+        self.__initalize_total_variables()
+        annotated_data = self.__get_annotated_data()
+        for image_path in annotated_data:
+            self.__initalize_image_variables()
+            image = cv2.imread(image_path)
+            detector = YoloV3Detector(model, image, device, 0.3, 0.5, 416)
+            predicted_bboxes = detector.predict()
+            new_predicted_bboxes = []
+            for box in predicted_bboxes:
+                new_predicted_bboxes.append((box[0].item(), box[1].item(),
+                                             box[2].item(), box[3].item(),
+                                             box[6].item()))
+            for ground_truth_box in annotated_data[image_path]:
+                bbox_index = 0
+                best_iou = 0
+                ground_truth_box = (ground_truth_box[0], ground_truth_box[1],
+                                    ground_truth_box[0] + ground_truth_box[2],
+                                    ground_truth_box[1] + ground_truth_box[3],
+                                    ground_truth_box[4])
+                for index, predicted_bbox in enumerate(new_predicted_bboxes):
+                    iou = intersection_over_union(ground_truth_box, predicted_bbox)
+                    if iou > best_iou:
+                        best_iou = iou
+                        bbox_index = index
+
+                if ground_truth_box[4] not in self.__total_true_positives_classification:
+                    self.__total_true_positives_classification[ground_truth_box[4]] = 0
+                if ground_truth_box[4] not in self.__total_false_positives_classification:
+                    self.__total_false_positives_classification[ground_truth_box[4]] = 0
+                if ground_truth_box[4] not in self.__true_positives_classification_image:
+                    self.__true_positives_classification_image[ground_truth_box[4]] = 0
+                if ground_truth_box[4] not in self.__false_positives_classification_image:
+                    self.__false_positives_classification_image[ground_truth_box[4]] = 0
+
+                if best_iou >= iou_thresh:
+                    self.__total_true_positives_detections += 1
+                    self.__true_positives_detections_image += 1
+                    if ground_truth_box[4] == new_predicted_bboxes[bbox_index][4]:
+                        self.__total_true_positives_classification[ground_truth_box[4]] += 1
+                        self.__true_positives_classification_image[ground_truth_box[4]] += 1
+                    else:
+                        self.__total_false_positives_classification[ground_truth_box[4]] += 1
+                        self.__false_positives_classification_image[ground_truth_box[4]] += 1
+                    del new_predicted_bboxes[bbox_index]
+                else:
+                    self.__total_false_negatives_detections += 1
+                    self.___false_negatives_detections_image += 1
+
+            self.__total_false_positives_detections += len(new_predicted_bboxes)
+            self.__false_positives_detections_image += len(new_predicted_bboxes)
+
+            self.__print_image_evaluation(image_path)
+
+        self.__print_overall_evaluation()
 
 
 class EvaluateYoloPrebuilt:
@@ -240,11 +235,14 @@ class EvaluateYoloPrebuilt:
                       str(round(total_classification_precision[class_id], 3)))
 
     def evaluate_prebuilt_yolo(self, type, iou_thresh=0.5):
-        print("YOLOV PREBUILT EVALUATION")
+        print("YOLO PREBUILT EVALUATION")
         print("=============================================="
               "===============================================\n")
         cfg_path = './data/'+type+'.cfg'
         weights_path = './data/' + type + '.weights'
+        neural_network = cv2.dnn.readNetFromDarknet(cfg_path, weights_path)
+        neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+        neural_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
         self.__initalize_image_variables()
         self.__initalize_total_variables()
         annotated_data = self.__get_annotated_data()
@@ -254,16 +252,13 @@ class EvaluateYoloPrebuilt:
             if image is None:
                 print("Image not found!")
                 break
-            neural_network = cv2.dnn.readNetFromDarknet(cfg_path, weights_path)
-            neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
-            neural_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
             blob = cv2.dnn.blobFromImage(image, 1 / 255, (self.__yolo_size, self.__yolo_size), True, crop=False)
             neural_network.setInput(blob)
             layers = neural_network.getLayerNames()
             output_names = \
                 [layers[idx[0] - 1] for idx in neural_network.getUnconnectedOutLayers()]
             outputs = neural_network.forward(output_names)
-            bbox_locations, class_label_ids, conf_values = find_objects(outputs)
+            bbox_locations, conf_values = detect_objects_prebuilt(outputs)
             for ground_truth_box in annotated_data[image_path]:
                 bbox_index = 0
                 best_iou = 0

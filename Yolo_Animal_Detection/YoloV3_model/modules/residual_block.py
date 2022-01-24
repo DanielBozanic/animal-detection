@@ -1,5 +1,5 @@
 import torch.nn as nn
-from modules.convolutional_layer import ConvolutionalLayer
+from YoloV3_model.modules.convolutional_layer import ConvolutionalLayer
 
 class ResidualBlock(nn.Module):
     def __init__(self, filters_in):

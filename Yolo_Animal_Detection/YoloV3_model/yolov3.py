@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-from modules.detection_block import DetectionBlock
-from modules.upsample import Upsample
-from backbone_route_extractor import BackboneRouteExtractor
+from YoloV3_model.modules.detection_block import DetectionBlock
+from YoloV3_model.modules.upsample import Upsample
+from YoloV3_model.backbone_route_extractor import BackboneRouteExtractor
 
 class YoloV3(nn.Module):
     def __init__(self, backbone):
