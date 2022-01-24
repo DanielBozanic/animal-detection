@@ -270,6 +270,8 @@ class EvaluateYoloPrebuilt:
             for box in bbox_locations:
                 if class_label_ids[i] != 0:
                     box.append(class_label_ids[i])
+                else:
+                    box.append(class_label_ids[i-1])
                 i += 1
             if not bbox_locations or len(bbox_locations[0]) == 4:
                 continue
