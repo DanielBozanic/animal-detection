@@ -1,5 +1,6 @@
 import os
-from evaluate import *
+from evaluate_yolov3 import *
+from evaluate_prebuilt import *
 from YoloV3_model.backbone import Backbone
 from YoloV3_model.yolov3 import YoloV3
 from yolo_detector_prebuilt_image import yolo_prebuilt_image
@@ -19,6 +20,8 @@ if __name__ == '__main__':
         yoloV3 = YoloV3(backbone)
         yoloV3.load_state_dict(torch.load('data/weights.pth'))
         yoloV3.to(device)
+
+        classes = read_classes(CLASSES)
 
         print("------- YoloV3 -------")
         print("1. YoloV3 object detection on image")
@@ -46,10 +49,11 @@ if __name__ == '__main__':
             if image is None:
                 print("Image not found!")
             else:
-                detector = YoloV3Detector(yoloV3, image, device, 0.65, 0.5, 416)
+                detector = YoloV3Detector(yoloV3, image, device)
                 predicted_bboxes = detector.predict()
-                result = detector.draw_boxes_on_image(predicted_bboxes)
-                cv2.imshow('YoloV3 Image Detection', result)
+                draw_boxes_on_image(image, predicted_bboxes, classes, image.shape[1] / YOLO_SIZE,
+                                             image.shape[0] / YOLO_SIZE)
+                cv2.imshow('YoloV3 Image Detection', image)
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
         # Video
@@ -63,10 +67,11 @@ if __name__ == '__main__':
                 while cap.isOpened():
                     _, image = cap.read()
                     if image is not None:
-                        detector = YoloV3Detector(yoloV3, image, device, 0.65, 0.5, 416)
+                        detector = YoloV3Detector(yoloV3, image, device)
                         predicted_bboxes = detector.predict()
-                        result = detector.draw_boxes_on_image(predicted_bboxes)
-                        cv2.imshow('YoloV3 Video Detection', result)
+                        draw_boxes_on_image(image, predicted_bboxes, classes, image.shape[1] / YOLO_SIZE,
+                                                     image.shape[0] / YOLO_SIZE)
+                        cv2.imshow('YoloV3 Video Detection', image)
                     else:
                         break
                     k = cv2.waitKey(10)
@@ -82,7 +87,7 @@ if __name__ == '__main__':
         elif choice == "4":
             print("Image path: ")
             image_path = input()
-            yolo_prebuilt_image("yolov3-tiny",image_path)
+            yolo_prebuilt_image("yolov3-tiny", image_path)
         # YoloV3-tiny video
         elif choice == "5":
             print("Video path: ")

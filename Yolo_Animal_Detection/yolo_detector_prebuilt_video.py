@@ -26,8 +26,8 @@ def yolo_prebuilt_video(type, path):
         outputs = neural_network.forward(output_names) # forward propagation
 
         bbox_locations, conf_values = detect_objects_prebuilt(outputs) # uzmi stuff iz prediction vector
-        draw_boxes_on_image_prebuilt(frame, bbox_locations, labels, conf_values,
-                             original_width / YOLO_SIZE, original_height / YOLO_SIZE, COLORS)
+        draw_boxes_on_image(frame, bbox_locations, labels, original_width / YOLO_SIZE,
+                                     original_height / YOLO_SIZE, conf_values)
 
         cv2.imshow('YOLO Algorithm', frame)
         key = cv2.waitKey(1) & 0xff

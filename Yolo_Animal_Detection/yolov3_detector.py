@@ -8,15 +8,14 @@ import cv2
 
 class YoloV3Detector:
 
-    def __init__(self, model, image, device, object_thresh=0.7, iou_thresh=0.5, model_res=416):
+    def __init__(self, model, image, device, object_thresh=PREDICTION_LOW_LIMIT,
+                 iou_thresh=SUPPRESSION_THRESHOLD, model_res=YOLO_SIZE):
         self.__model = model
         self.__image = image
         self.__device = device
         self.__object_thresh = object_thresh
         self.__iou_thresh = iou_thresh
         self.__model_res = model_res
-        self.__classes = read_classes('data/coco.names')
-
 
     def predict(self):
         anchors = ([(116, 90), (156, 198), (373, 326)],
@@ -35,23 +34,6 @@ class YoloV3Detector:
             if bbox[-1] in [14, 15, 16, 20, 22, 23]:
                 filtered_predicted_bboxes.append(bbox)
         return filtered_predicted_bboxes
-
-    def draw_boxes_on_image(self, boxes):
-        height = self.__image.shape[0] / self.__model_res
-        width = self.__image.shape[1] / self.__model_res
-        font = cv2.FONT_HERSHEY_COMPLEX
-        for b in boxes:
-            class_id = int(b[-1])
-            text_width, text_height = cv2.getTextSize(self.__classes[class_id], font, 0.5, 1)[0]
-            confidence_text = ':' + str(int(float(b[5]) * float(b[4]) * 100)) + '%'
-            start = (int(b[0] * width), int(b[1] * height))
-            end = (int(b[2] * width), int(b[3] * height))
-            cv2.rectangle(self.__image, start, end, COLORS[class_id].tolist(), 2)
-            cv2.rectangle(self.__image, start, (int(b[2] * width), start[1] + text_height + 10),
-                          color=(255, 255, 255), thickness=-1)
-            cv2.putText(self.__image, self.__classes[class_id] + confidence_text,
-                        (start[0], start[1] + text_height + 2), font, 0.5, color=(0, 0, 0), thickness=1)
-        return self.__image
 
     def __non_maximum_suppression(self, boxes):
         if boxes.size(0) == 0:

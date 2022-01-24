@@ -4,6 +4,7 @@ import numpy as np
 DATA_FOLDER = './data/'
 PREDICTION_LOW_LIMIT = 0.3 # ako je ispod 30% ne treba nam predikcija
 SUPPRESSION_THRESHOLD = 0.5
+CLASSES = 'data/coco.names'
 YOLO_SIZE = 416
 
 
@@ -13,7 +14,24 @@ def read_classes(file_path):
     return classes
 
 
-COLORS = np.random.randint(0, 255, size=(len(read_classes('data/coco.names')), 3), dtype='uint8')
+COLORS = np.random.randint(0, 255, size=(len(read_classes(CLASSES)), 3), dtype='uint8')
+
+
+def get_annotated_data():
+    data = dict()
+    f = open("data/annotation_data.csv", "r")
+    for l in f.readlines():
+        parts = l.strip("\n").split(",")
+        x, y, width, height, class_id, image_path = parts
+        if image_path not in data:
+            data[image_path] = []
+        try:
+            box = (float(x), float(y), float(width), float(height), int(class_id))
+            data[image_path].append(box)
+        except Exception as e:
+            print(e)
+    f.close()
+    return data
 
 
 def intersection_over_union(bbox1, bbox2):
@@ -73,18 +91,25 @@ def detect_objects_prebuilt(model_outputs):
     return new_predicted_bboxes, new_conf_values
 
 
-def draw_boxes_on_image_prebuilt(img, all_bounding_boxes, classes, confidence_values,
-                                 width_ratio, height_ratio, colors):
-    try:
-        for idx, bounding_box in enumerate(all_bounding_boxes):
-            x, y, w, h = int(bounding_box[0]), int(bounding_box[1]), int(bounding_box[2]), int(bounding_box[3])
-            x = int(x * width_ratio)
-            y = int(y * height_ratio)
-            w = int(w * width_ratio)
-            h = int(h * height_ratio)
-            color_box_current = colors[bounding_box[-1]].tolist()
+def draw_boxes_on_image(img, boxes, classes, width_ratio, height_ratio,
+                                 confidence_values=[]):
+    for idx, bounding_box in enumerate(boxes):
+        x, y, w, h = int(bounding_box[0]), int(bounding_box[1]), int(bounding_box[2]), int(bounding_box[3])
+        x = int(x * width_ratio)
+        y = int(y * height_ratio)
+        w = int(w * width_ratio)
+        h = int(h * height_ratio)
+        if not isinstance(bounding_box, list):
+            class_id = int(bounding_box[-1].item())
+            color_box_current = COLORS[class_id].tolist()
+        else:
+            color_box_current = COLORS[bounding_box[-1]].tolist()
+        if len(confidence_values) > 0:
             cv2.rectangle(img, (x, y), (x + w, y + h), color_box_current, 2)
             text_box = classes[bounding_box[-1]] + ' ' + str(int(confidence_values[idx] * 100)) + '%'
-            cv2.putText(img, text_box, (x, y - 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.5, color_box_current, 1)
-    except:
-        print("Probability is lower than treshold!")
+        else:
+            cv2.rectangle(img, (x, y), (w, h), color_box_current, 2)
+            class_id = int(bounding_box[-1].item())
+            conf = float(bounding_box[4].item())
+            text_box = classes[class_id] + ' ' + str(int(conf * 100)) + '%'
+        cv2.putText(img, text_box, (x, y - 10), cv2.FONT_HERSHEY_COMPLEX, 0.5, color_box_current, 1)

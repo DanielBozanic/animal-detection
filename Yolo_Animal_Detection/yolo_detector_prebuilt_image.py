@@ -28,8 +28,8 @@ def yolo_prebuilt_image(type, path):
 
     outputs = neural_network.forward(output_names)
     bbox_locations, conf_values = detect_objects_prebuilt(outputs)
-    draw_boxes_on_image_prebuilt(image, bbox_locations, labels, conf_values,
-                         original_w / YOLO_SIZE, original_h / YOLO_SIZE, COLORS)
+    draw_boxes_on_image(image, bbox_locations, labels, original_w / YOLO_SIZE,
+                                 original_h / YOLO_SIZE, conf_values)
 
     cv2.imshow('YOLO Algorithm', image)
     cv2.waitKey()
