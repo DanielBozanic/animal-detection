@@ -8,10 +8,7 @@ from yolo_detector_prebuilt_video import yolo_prebuilt_video
 
 
 if __name__ == '__main__':
-    if torch.cuda.is_available():
-        device = torch.device('cuda')
-    else:
-        device = torch.device('cpu')
+    device = torch.device('cpu')
 
     with torch.no_grad():
         backbone = Backbone()
