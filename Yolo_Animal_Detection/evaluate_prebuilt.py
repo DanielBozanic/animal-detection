@@ -69,12 +69,12 @@ class EvaluateYoloPrebuilt:
                 print("Precision classification across all test images for class " + self.__classes[class_id] + ":",
                       str(round(total_classification_precision[class_id], 3)))
 
-    def evaluate_prebuilt_yolo(self, type, iou_thresh=SUPPRESSION_THRESHOLD):
-        print("YOLO PREBUILT EVALUATION")
+    def evaluate_prebuilt_yolo(self, yolo_type, iou_thresh=SUPPRESSION_THRESHOLD):
+        print(yolo_type.upper() + " PREBUILT EVALUATION")
         print("=============================================="
               "===============================================\n")
-        cfg_path = './data/'+type+'.cfg'
-        weights_path = './data/' + type + '.weights'
+        cfg_path = './data/' + yolo_type + '.cfg'
+        weights_path = './data/' + yolo_type + '.weights'
         neural_network = cv2.dnn.readNetFromDarknet(cfg_path, weights_path)
         neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
         neural_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)

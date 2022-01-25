@@ -53,7 +53,7 @@ if __name__ == '__main__':
                 predicted_bboxes = detector.predict()
                 draw_boxes_on_image(image, predicted_bboxes, classes, image.shape[1] / YOLO_SIZE,
                                              image.shape[0] / YOLO_SIZE)
-                cv2.imshow('YoloV3 Image Detection', image)
+                cv2.imshow('YOLOV3 Image Detection', image)
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
         # Video
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                         predicted_bboxes = detector.predict()
                         draw_boxes_on_image(image, predicted_bboxes, classes, image.shape[1] / YOLO_SIZE,
                                                      image.shape[0] / YOLO_SIZE)
-                        cv2.imshow('YoloV3 Video Detection', image)
+                        cv2.imshow('YOLOV3 Video Detection', image)
                     else:
                         break
                     k = cv2.waitKey(10)

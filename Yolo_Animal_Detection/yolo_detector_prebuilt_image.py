@@ -3,10 +3,10 @@ import numpy as np
 from utils import *
 
 
-def yolo_prebuilt_image(type, path):
-    cfg = DATA_FOLDER + type + '.cfg'
-    weights = DATA_FOLDER + type + '.weights'
-    labels = read_classes('data/coco.names')
+def yolo_prebuilt_image(yolo_type, path):
+    cfg = DATA_FOLDER + yolo_type + '.cfg'
+    weights = DATA_FOLDER + yolo_type + '.weights'
+    labels = read_classes(CLASSES)
     image = cv2.imread(path)
     if image is None:
         print("Image not found!")
@@ -31,5 +31,5 @@ def yolo_prebuilt_image(type, path):
     draw_boxes_on_image(image, bbox_locations, labels, original_w / YOLO_SIZE,
                                  original_h / YOLO_SIZE, conf_values)
 
-    cv2.imshow('YOLO Algorithm', image)
+    cv2.imshow(yolo_type.upper() + ' Detection', image)
     cv2.waitKey()

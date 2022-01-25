@@ -80,7 +80,10 @@ class EvaluateYoloV3:
         for image_path in annotated_data:
             self.__initalize_image_variables()
             image = cv2.imread(image_path)
-            detector = YoloV3Detector(model, image, device, 0.3, 0.5, 416)
+            if image is None:
+                print("Image not found!")
+                break
+            detector = YoloV3Detector(model, image, device)
             predicted_bboxes = detector.predict()
             new_predicted_bboxes = []
             for box in predicted_bboxes:

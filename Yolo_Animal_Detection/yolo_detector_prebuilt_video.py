@@ -2,10 +2,10 @@ import cv2
 import numpy as np
 from utils import *
 
-def yolo_prebuilt_video(type, path):
-    cfg = DATA_FOLDER + type + '.cfg'
-    weights = DATA_FOLDER + type + '.weights'
-    labels = read_classes('data/coco.names')
+def yolo_prebuilt_video(yolo_type, path):
+    cfg = DATA_FOLDER + yolo_type + '.cfg'
+    weights = DATA_FOLDER + yolo_type + '.weights'
+    labels = read_classes(CLASSES)
 
     neural_network = cv2.dnn.readNetFromDarknet(cfg, weights)
     neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
@@ -29,7 +29,7 @@ def yolo_prebuilt_video(type, path):
         draw_boxes_on_image(frame, bbox_locations, labels, original_width / YOLO_SIZE,
                                      original_height / YOLO_SIZE, conf_values)
 
-        cv2.imshow('YOLO Algorithm', frame)
+        cv2.imshow(yolo_type.upper() + ' Detection', frame)
         key = cv2.waitKey(1) & 0xff
         if (key == 27) | (not is_grab):
             break
