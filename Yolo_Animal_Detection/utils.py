@@ -110,6 +110,6 @@ def draw_boxes_on_image(img, boxes, classes, width_ratio, height_ratio,
         else:
             cv2.rectangle(img, (x, y), (w, h), color_box_current, 2)
             class_id = int(bounding_box[-1].item())
-            conf = float(bounding_box[4].item())
+            conf = float(bounding_box[5].item())
             text_box = classes[class_id] + ' ' + str(int(conf * 100)) + '%'
         cv2.putText(img, text_box, (x, y - 10), cv2.FONT_HERSHEY_COMPLEX, 0.5, color_box_current, 1)
