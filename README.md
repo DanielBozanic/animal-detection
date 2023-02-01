@@ -1,5 +1,9 @@
 # Prerequisites
 
+## Presentation and poster
+The poster is in the folder named "Poster/". File name: "poster.pdf".
+Presentation is in folder named "Presentation/". File name: "Detekcija i klasifikacija životinja.pptx".
+
 ## Weights and videos
 Pytorch yolov3, yolov3-tiny, yolov4, yolov4-tiny weights and animal videos can be downloaded using this link:
 - https://drive.google.com/drive/folders/18PRvy569y1C_snZoNj8nfqmds1P0k4kl
